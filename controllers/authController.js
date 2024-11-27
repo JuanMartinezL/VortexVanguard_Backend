@@ -58,37 +58,29 @@ const login = async (req, res) => {
 
 //restablecimiento de contraseña
 const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-
-    console.log('Solicitud recibida para restablecer contraseña de:', email);
-
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: req.body.email });
         if (!user) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
+            return res.status(404).send('Usuario no encontrado');
         }
 
-        //Generar token de restablecimiento
-
-        console.log('Usuario encontrado:', user);
-
-        const resetToken = crypto.randomBytes(20).toString('hex');
-        user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-        user.resetPasswordExpires = Date.now() + 30 * 60 * 1000; // Token válido por 30 minutos
-
+        // Generar el token de restablecimiento y establecer su expiración
+        const token = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 30 * 60 * 1000; // 30 minutos
         await user.save();
 
-        //Enviar correo
-        
-        const resetUrl = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${resetToken}`;
-        const message = `Haga clic en el siguiente enlace para restablecer su contraseña: ${resetUrl}`;
+        // Llamar a sendEmail con las propiedades necesarias
+        await sendEmail({
+            to: user.email,
+            subject: 'Restablecimiento de contraseña',
+            text: `Hola ${user.name}, utiliza este enlace para restablecer tu contraseña: http://example.com/reset/${user.resetPasswordToken}`,
+        });
 
-        await sendEmail(user.email,'Solicitud de Restablecimiento de Contraseña', message);
-        
-        res.status(200).json({ message: 'Correo de restablecimiento enviado' });
+        res.status(200).send('Correo de restablecimiento enviado');
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al solicitar restablecimiento' });
+        console.error('Error:', error);
+        res.status(500).send('Error enviando correo');
     }
 };
 
