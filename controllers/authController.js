@@ -77,10 +77,10 @@ const forgotPassword = async (req, res) => {
             text: `Hola ${user.name}, utiliza este enlace para restablecer tu contraseña: http://example.com/reset/${user.resetPasswordToken}`,
         });
 
-        res.status(200).send('Correo de restablecimiento enviado');
+        res.status(200).json('Correo de restablecimiento enviado');
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).send('Error enviando correo');
+        res.status(500).json('Error enviando correo');
     }
 };
 
