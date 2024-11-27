@@ -16,13 +16,13 @@ const app = express();
 
 // Configuración de CORS
 const corsOptions = {
-    origin: 'https://vortexvanguard.onrender.com', 
+    origin: ['https://vortexvanguard.onrender.com', 'http://127.0.0.1:5501'],
     methods: 'GET,POST,PUT,DELETE', // Métodos permitidos
     allowedHeaders: 'Content-Type,Authorization', // Asegúrate de incluir Authorization
     credentials: true // Esto permite el envío de cookies si es necesario 
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 

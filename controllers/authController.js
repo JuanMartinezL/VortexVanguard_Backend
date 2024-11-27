@@ -85,7 +85,7 @@ const forgotPassword = async (req, res) => {
         await sendEmail({
             to: user.email,
             subject: 'Restablecimiento de contraseña',
-            text: `Hola ${user.name}, utiliza este enlace para restablecer tu contraseña: http://example.com/reset/${user.resetPasswordToken}`,
+            text: `Hola ${user.name}, utiliza este enlace para restablecer tu contraseña: ${user.resetPasswordToken}`,
         });
 
         res.status(200).json('Correo de restablecimiento enviado');
