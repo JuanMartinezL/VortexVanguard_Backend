@@ -50,6 +50,17 @@ const login = async (req, res) => {
         user: { id: user._id, name: user.name, email: user.email, role: user.role }
         });
         
+        res.cookie('authToken', token, {
+            httpOnly: true, // No puede ser accedido desde JS en el frontend
+            secure: process.env.NODE_ENV === 'production', // Solo en HTTPS en producción
+            maxAge: 6 * 60 * 60 * 1000, // Tiempo de expiración (6 horas)
+        });
+
+        res.status(200).json({
+            message: `Inicio de sesión exitoso 🥳🥳. || Bienvenid@ ${user.name}!`,
+            user: { id: user._id, name: user.name, email: user.email, role: user.role }
+        });
+
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: 'Error al iniciar sesión', details: error.message });
